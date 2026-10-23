@@ -10,8 +10,7 @@ This release regenerates every numerical result and every figure in version 7 of
 
 | Path | What it does |
 |---|---|
-| `verification_v7.ipynb` | Recomputes every numerical claim in v7. Each closed-form result and explicit certificate is checked against linear programming over the complete stabilizer polytope (floating point, HiGHS). Section 11 runs the two-qubit frame census over all 2048 Pauli-covariant frames. Section 12.3 re-checks the rational certificates in exact arithmetic. Section 12.4 checks the additions in v7. Section 13 writes all figures as PDF. This copy has no outputs. |
-| `verification_v7_executed.ipynb` | The same notebook, saved with the outputs of a complete run (`RUN_N4 = RUN_SLOW = True`). |
+| `verification_v7_executed.ipynb` | Recomputes every numerical claim in v7, and is saved with the outputs of a complete run with the default flags (`RUN_N4 = RUN_SLOW = True`; 143/143 checks pass). Each closed-form result and explicit certificate is checked against floating-point linear programming over the complete stabilizer polytope (HiGHS). Section 11 runs the two-qubit frame census over all 2048 Pauli-covariant frames. Section 12.3 re-checks the rational certificates in exact arithmetic. Section 12.4 checks the additions in v7. Section 13 writes all figures as PDF. Re-running it in Jupyter overwrites the saved outputs. |
 | `make_figures.py` | Standalone script that writes all figure PDFs to `figures/` in about a minute. Its code is generated from the notebook. |
 | `figures/` | The figure PDFs used in the paper. |
 | `lp_1820_grid/` | Exact primal and dual certificates for the 1,820 pairs ρ = (a,b,0)/8, σ = (c,d,e)/8 of Observation 5.2. `check_certificates.py` verifies them in exact rational arithmetic in seconds, using no LP and no floating point. `lp_1820.py` regenerates them in about 2 minutes. See `lp_1820_grid/README.md`. |
@@ -24,7 +23,7 @@ The Lean 4 formalization of the two-factor equatorial identity and the self-tens
 pip install -r requirements.txt
 python make_figures.py                      # figures only (~1 minute)
 python lp_1820_grid/check_certificates.py   # exact check of the 1,820 certificates (seconds)
-jupyter notebook verification_v7.ipynb      # full verification
+jupyter notebook verification_v7_executed.ipynb   # full verification (re-run all cells)
 ```
 
 Flags at the top of the notebook:
@@ -37,7 +36,9 @@ A complete run takes about 20 minutes (143 checks). With `RUN_N4 = RUN_SLOW = Fa
 
 ## What is exact and what is numerical
 
-Values the paper calls exact are proved analytically or certified individually in exact arithmetic. Everything else comes from floating-point linear programs (HiGHS via SciPy) and is labelled as sampled or numerical. This includes the frame census at eight parameter values, the noise sweep at seven noise levels, and the multistart searches.
+Random samples use fixed seeds: `np.random.default_rng(2603)` for the checks and `np.random.default_rng(2026)` for the figure samples. A run with the default flags therefore reproduces the sample counts quoted in the paper exactly, for example 33/40 in Remark 5.6 and 820/2000 in Remark 7.2.
+
+Values the paper calls exact are proved analytically or certified individually in exact arithmetic. Everything else comes from floating-point linear programs (HiGHS via SciPy) and is labelled as sampled or numerical. This includes the frame census at eight parameter values, the noise sweep (12 noise levels at each of two angles, and the 40-point grid of Fig. 6), and the multistart searches.
 
 ## Conventions
 
